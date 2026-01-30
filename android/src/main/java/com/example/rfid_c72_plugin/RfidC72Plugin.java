@@ -15,7 +15,6 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /**
  * RfidC72Plugin
@@ -39,38 +38,11 @@ public class RfidC72Plugin implements FlutterPlugin, MethodCallHandler {
   private static final String CHANNEL_STOP_SCAN_BARCODE = "stopScan";
   private static final String CHANNEL_READ_BARCODE = "readBarcode";
   private static final String CHANNEL_CLOSE_SCAN_BARCODE="closeScan";
+  private static final String CHANNEL_READ_DATA = "readData";
+  private static final String CHANNEL_WRITE_DATA = "writeData";
+  private static final String CHANNEL_SET_FILTER = "setFilter";
   private static PublishSubject<Boolean> connectedStatus = PublishSubject.create();
   private static PublishSubject<String> tagsStatus = PublishSubject.create();
-
-  // This static function is optional and equivalent to onAttachedToEngine. It supports the old
-  // pre-Flutter-1.12 Android projects. You are encouraged to continue supporting
-  // plugin registration via this function while apps migrate to use the new Android APIs
-  // post-flutter-1.12 via https://flutter.dev/go/android-project-migration.
-  //
-  // It is encouraged to share logic between onAttachedToEngine and registerWith to keep
-  // them functionally equivalent. Only one of onAttachedToEngine or registerWith will be called
-  // depending on the user's project. onAttachedToEngine or registerWith must both be defined
-  // in the same class.
-  public static void registerWith(Registrar registrar) {
-    final MethodChannel channel = new MethodChannel(registrar.messenger(), "rfid_c72_plugin");
-    initConnectedEvent(registrar.messenger());
-    initReadEvent(registrar.messenger());
-    channel.setMethodCallHandler(new RfidC72Plugin());
-
-    UHFHelper.getInstance().init(registrar.context());
-    UHFHelper.getInstance().setUhfListener(new UHFListener() {
-      @Override
-      public void onRead(String tagsJson) {
-        if (tagsJson != null)
-          tagsStatus.onNext(tagsJson);
-      }
-
-      @Override
-      public void onConnect(boolean isConnected, int powerLevel) {
-        connectedStatus.onNext(isConnected);
-      }
-    });
-  }
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
@@ -231,6 +203,51 @@ public class RfidC72Plugin implements FlutterPlugin, MethodCallHandler {
         break;
       case CHANNEL_READ_BARCODE:
         result.success(UHFHelper.getInstance().readBarcode());
+        break;
+      case CHANNEL_READ_DATA:
+        String readPassword = call.argument("password");
+        Integer readBank = call.argument("bank");
+        Integer readStart = call.argument("start");
+        Integer readLength = call.argument("length");
+        String readFilterData = call.argument("filterData");
+        Integer readFilterBank = call.argument("filterBank");
+        Integer readFilterStart = call.argument("filterStart");
+        Integer readFilterLength = call.argument("filterLength");
+
+        if (readPassword == null || readBank == null || readStart == null || readLength == null) {
+          result.error("read_args_missing", "readData için eksik parametre", null);
+          break;
+        }
+        result.success(UHFHelper.getInstance().readData(readPassword, readBank, readStart, readLength, readFilterData, readFilterBank, readFilterStart, readFilterLength));
+        break;
+      case CHANNEL_WRITE_DATA:
+        String writePassword = call.argument("password");
+        Integer writeBank = call.argument("bank");
+        Integer writeStart = call.argument("start");
+        Integer writeLength = call.argument("length");
+        String writeData = call.argument("data");
+        String writeFilterData = call.argument("filterData");
+        Integer writeFilterBank = call.argument("filterBank");
+        Integer writeFilterStart = call.argument("filterStart");
+        Integer writeFilterLength = call.argument("filterLength");
+
+        if (writePassword == null || writeBank == null || writeStart == null || writeLength == null || writeData == null) {
+          result.error("write_args_missing", "writeData için eksik parametre", null);
+          break;
+        }
+        result.success(UHFHelper.getInstance().writeData(writePassword, writeBank, writeStart, writeLength, writeData, writeFilterData, writeFilterBank, writeFilterStart, writeFilterLength));
+        break;
+      case CHANNEL_SET_FILTER:
+        Integer filterBank = call.argument("bank");
+        Integer filterStart = call.argument("start");
+        Integer filterLength = call.argument("length");
+        String filterData = call.argument("data");
+
+        if (filterBank == null || filterStart == null || filterLength == null || filterData == null) {
+          result.error("filter_args_missing", "setFilter için eksik parametre", null);
+          break;
+        }
+        result.success(UHFHelper.getInstance().setFilter(filterBank, filterStart, filterLength, filterData));
         break;
       default:
         result.notImplemented();

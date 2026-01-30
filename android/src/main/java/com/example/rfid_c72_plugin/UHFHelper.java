@@ -260,6 +260,35 @@ public class UHFHelper {
         return true;
     }
 
+    public String readData(String password, int bank, int start, int length, String filterData, Integer filterBank, Integer filterStart, Integer filterLength) {
+        if (mReader == null) {
+            return null;
+        }
+        boolean hasFilter = filterData != null && filterBank != null && filterStart != null && filterLength != null;
+        if (hasFilter) {
+            return mReader.readData(password, bank, start, length, filterData, filterBank, filterStart, filterLength);
+        }
+        return mReader.readData(password, bank, start, length);
+    }
+
+    public boolean writeData(String password, int bank, int start, int length, String data, String filterData, Integer filterBank, Integer filterStart, Integer filterLength) {
+        if (mReader == null) {
+            return false;
+        }
+        boolean hasFilter = filterData != null && filterBank != null && filterStart != null && filterLength != null;
+        if (hasFilter) {
+            return mReader.writeData(password, bank, start, length, data, filterBank, filterStart, filterLength, filterData);
+        }
+        return mReader.writeData(password, bank, start, length, data);
+    }
+
+    public boolean setFilter(int bank, int start, int length, String data) {
+        if (mReader == null) {
+            return false;
+        }
+        return mReader.setFilter(bank, start, length, data);
+    }
+
     class TagThread extends Thread {
         public void run() {
             String strTid;

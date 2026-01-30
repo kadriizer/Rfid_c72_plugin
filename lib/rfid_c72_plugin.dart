@@ -67,6 +67,76 @@ class RfidC72Plugin {
     return _channel.invokeMethod('closeScan');
   }
 
+  static Future<String?> readData({
+    required String password,
+    required int bank,
+    required int start,
+    required int length,
+    int? filterBank,
+    int? filterStart,
+    int? filterLength,
+    String? filterData,
+  }) {
+    final Map<String, Object> args = {
+      'password': password,
+      'bank': bank,
+      'start': start,
+      'length': length,
+    };
+    if (filterBank != null && filterStart != null && filterLength != null && filterData != null) {
+      args.addAll({
+        'filterBank': filterBank,
+        'filterStart': filterStart,
+        'filterLength': filterLength,
+        'filterData': filterData,
+      });
+    }
+    return _channel.invokeMethod<String>('readData', args);
+  }
+
+  static Future<bool?> writeData({
+    required String password,
+    required int bank,
+    required int start,
+    required int length,
+    required String data,
+    int? filterBank,
+    int? filterStart,
+    int? filterLength,
+    String? filterData,
+  }) {
+    final Map<String, Object> args = {
+      'password': password,
+      'bank': bank,
+      'start': start,
+      'length': length,
+      'data': data,
+    };
+    if (filterBank != null && filterStart != null && filterLength != null && filterData != null) {
+      args.addAll({
+        'filterBank': filterBank,
+        'filterStart': filterStart,
+        'filterLength': filterLength,
+        'filterData': filterData,
+      });
+    }
+    return _channel.invokeMethod<bool>('writeData', args);
+  }
+
+  static Future<bool?> setFilter({
+    required int bank,
+    required int start,
+    required int length,
+    required String data,
+  }) {
+    return _channel.invokeMethod<bool>('setFilter', <String, Object>{
+      'bank': bank,
+      'start': start,
+      'length': length,
+      'data': data,
+    });
+  }
+
   static Future<bool?> setPowerLevel(String value) async {
     return _channel
         .invokeMethod('setPowerLevel', <String, String>{'value': value});

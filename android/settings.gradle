@@ -1,2 +1,1 @@
-include ':app',':libs'
-project(":libs").projectDir = file("./libs")
+rootProject.name = "rfid_c72_plugin"

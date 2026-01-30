@@ -1,21 +1,24 @@
 name: rfid_c72_plugin
-description: Rfid C72 Sdk Plugin.
-version: 0.0.3
+description: Rfid C72 SDK plugin with UHF + 2D barcode support for Chainway C72.
+version: 0.1.0
 homepage: https://github.com/Justin-roy/Rfid_c72_plugin.git
 
 environment:
-  sdk: ">=2.18.4 <3.0.0"
-  flutter: ">=2.5.0"
+  sdk: ">=3.3.0 <4.0.0"
+  flutter: ">=3.16.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  plugin_platform_interface: ^2.0.2
+  plugin_platform_interface: ^2.1.8
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  flutter_lints: ^6.0.0
+
+dependency_overrides:
+  win32: ^5.5.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
