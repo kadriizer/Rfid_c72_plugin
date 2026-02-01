@@ -94,6 +94,10 @@ public class UHFHelper {
             isConnect = mReader.init(context);
             //mReader.setFrequencyMode(2);
             //mReader.setPower(29);
+            // Enable FastID so reader returns TID together with EPC when supported
+            try {
+                mReader.setFastID(true);
+            } catch (Exception ignored) { }
             uhfListener.onConnect(isConnect, 0);
             return isConnect;
         }
@@ -101,15 +105,14 @@ public class UHFHelper {
         return false;
     }
 
-
-
     public boolean connectBarcode() {
         if (barcodeDecoder == null) {
             barcodeDecoder = BarcodeFactory.getInstance().getBarcodeDecoder();
         }
         barcodeDecoder.open(context);
 
-        //BarcodeUtility.getInstance().enablePlaySuccessSound(context, true);
+        // Varsayılan başarılı okuma sesi (cihaz beep'i)
+        BarcodeUtility.getInstance().enablePlaySuccessSound(context, true);
 
         barcodeDecoder.setDecodeCallback(new BarcodeDecoder.DecodeCallback() {
             @Override
@@ -126,7 +129,6 @@ public class UHFHelper {
         });
         return true;
     }
-
 
     public boolean scanBarcode() {
         barcodeDecoder.startScan();
@@ -205,6 +207,13 @@ public class UHFHelper {
         //{ "1", "2" 4", "8", "22", "50", "51", "52", "128"}
         if (mReader != null)
             return mReader.setFrequencyMode(Integer.parseInt(area));
+        return false;
+    }
+
+    public boolean setFastId(boolean enable) {
+        if (mReader != null) {
+            return mReader.setFastID(enable);
+        }
         return false;
     }
 

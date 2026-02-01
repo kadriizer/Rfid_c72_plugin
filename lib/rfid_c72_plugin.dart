@@ -67,6 +67,13 @@ class RfidC72Plugin {
     return _channel.invokeMethod('closeScan');
   }
 
+  static Future<bool?> setFastId(bool enable) {
+    return _channel.invokeMethod<bool>(
+      'setFastID',
+      <String, Object>{'enable': enable},
+    );
+  }
+
   static Future<String?> readData({
     required String password,
     required int bank,

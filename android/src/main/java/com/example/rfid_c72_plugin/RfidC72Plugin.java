@@ -38,6 +38,7 @@ public class RfidC72Plugin implements FlutterPlugin, MethodCallHandler {
   private static final String CHANNEL_STOP_SCAN_BARCODE = "stopScan";
   private static final String CHANNEL_READ_BARCODE = "readBarcode";
   private static final String CHANNEL_CLOSE_SCAN_BARCODE="closeScan";
+  private static final String CHANNEL_SET_FAST_ID = "setFastID";
   private static final String CHANNEL_READ_DATA = "readData";
   private static final String CHANNEL_WRITE_DATA = "writeData";
   private static final String CHANNEL_SET_FILTER = "setFilter";
@@ -188,6 +189,13 @@ public class RfidC72Plugin implements FlutterPlugin, MethodCallHandler {
       case CHANNEL_SETWORKAREA:
         String workArea = call.argument("value");
         result.success(UHFHelper.getInstance().setWorkArea(workArea));
+        break;
+      case CHANNEL_SET_FAST_ID:
+        Boolean fastId = call.argument("enable");
+        if (fastId == null) {
+          fastId = true;
+        }
+        result.success(UHFHelper.getInstance().setFastId(fastId));
         break;
       case CHANNEL_CONNECT_BARCODE:
         result.success(UHFHelper.getInstance().connectBarcode());
