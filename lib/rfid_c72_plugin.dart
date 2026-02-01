@@ -149,6 +149,10 @@ class RfidC72Plugin {
         .invokeMethod('setPowerLevel', <String, String>{'value': value});
   }
 
+  static Future<bool?> playTone(String type) {
+    return _channel.invokeMethod<bool>('playTone', <String, String>{'type': type});
+  }
+
   static Future<bool?> setWorkArea(String value) async {
     return _channel
         .invokeMethod('setWorkArea', <String, String>{'value': value});

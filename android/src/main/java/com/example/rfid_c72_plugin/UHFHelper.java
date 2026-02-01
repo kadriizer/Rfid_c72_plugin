@@ -1,6 +1,10 @@
 package com.example.rfid_c72_plugin;
 
 import android.content.Context;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
@@ -37,6 +41,7 @@ public class UHFHelper {
     private String scannedBarcode;
 
     private Context context;
+    private ToneGenerator toneGen;
 
     private UHFHelper() {
     }
@@ -64,6 +69,7 @@ public class UHFHelper {
         //this.uhfListener = uhfListener;
         tagList = new HashMap<String, EPC>();
         clearData();
+        toneGen = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
         handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -186,6 +192,10 @@ public class UHFHelper {
         if (mReader != null) {
             mReader.free();
             isConnect = false;
+        }
+        if (toneGen != null) {
+            toneGen.release();
+            toneGen = null;
         }
         clearData();
     }
@@ -314,12 +324,35 @@ public class UHFHelper {
                         strResult = "";
                     }
                     Log.i("data", "c" + res.getEPC() + "|" + strResult);
+                    playTone("success");
+
                     Message msg = handler.obtainMessage();
                     msg.obj = strResult + "EPC:" + res.getEPC() + "@" + res.getRssi();
 
                     handler.sendMessage(msg);
                 }
             }
+        }
+    }
+
+    public boolean playTone(String type) {
+        try {
+            if (toneGen == null) {
+                toneGen = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
+            }
+            int toneType = ToneGenerator.TONE_PROP_BEEP;
+            int duration = 180; // daha uzun ve yüksek
+            if ("error".equalsIgnoreCase(type)) {
+                toneType = ToneGenerator.TONE_SUP_ERROR;
+                duration = 260;
+            } else if ("warn".equalsIgnoreCase(type) || "warning".equalsIgnoreCase(type)) {
+                toneType = ToneGenerator.TONE_PROP_NACK;
+                duration = 200;
+            }
+            toneGen.startTone(toneType, duration);
+            return true;
+        } catch (Exception ignored) {
+            return false;
         }
     }
 

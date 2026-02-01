@@ -42,6 +42,7 @@ public class RfidC72Plugin implements FlutterPlugin, MethodCallHandler {
   private static final String CHANNEL_READ_DATA = "readData";
   private static final String CHANNEL_WRITE_DATA = "writeData";
   private static final String CHANNEL_SET_FILTER = "setFilter";
+  private static final String CHANNEL_PLAY_TONE = "playTone";
   private static PublishSubject<Boolean> connectedStatus = PublishSubject.create();
   private static PublishSubject<String> tagsStatus = PublishSubject.create();
 
@@ -256,6 +257,11 @@ public class RfidC72Plugin implements FlutterPlugin, MethodCallHandler {
           break;
         }
         result.success(UHFHelper.getInstance().setFilter(filterBank, filterStart, filterLength, filterData));
+        break;
+      case CHANNEL_PLAY_TONE:
+        String toneType = call.argument("type");
+        if (toneType == null) toneType = "success";
+        result.success(UHFHelper.getInstance().playTone(toneType));
         break;
       default:
         result.notImplemented();
