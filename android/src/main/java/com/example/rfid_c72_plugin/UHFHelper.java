@@ -229,6 +229,7 @@ public class UHFHelper {
 
     private void addEPCToList(String epc, String rssi) {
         if (!TextUtils.isEmpty(epc)) {
+            boolean isNewTag = !tagList.containsKey(epc);
             EPC tag = new EPC();
 
             tag.setId("");
@@ -257,8 +258,7 @@ public class UHFHelper {
                 }
 
             }
-            uhfListener.onRead(jsonArray.toString());
-
+            uhfListener.onRead(jsonArray.toString());            
         }
     }
 
@@ -317,22 +317,21 @@ public class UHFHelper {
                 res = mReader.readTagFromBuffer();
                 if (res != null) {
                     strTid = res.getTid();
-                    if (strTid.length() != 0 && !strTid.equals("0000000" +
-                            "000000000") && !strTid.equals("000000000000000000000000")) {
-                        strResult = "TID:" + strTid + "\n";
-                    } else {
-                        strResult = "";
-                    }
-                    Log.i("data", "c" + res.getEPC() + "|" + strResult);
-                    playTone("success");
-
-                    Message msg = handler.obtainMessage();
-                    msg.obj = strResult + "EPC:" + res.getEPC() + "@" + res.getRssi();
-
-                    handler.sendMessage(msg);
-                }
+            if (strTid.length() != 0 && !strTid.equals("0000000" +
+                    "000000000") && !strTid.equals("000000000000000000000000")) {
+                strResult = "TID:" + strTid + "\n";
+            } else {
+                strResult = "";
             }
+            Log.i("data", "c" + res.getEPC() + "|" + strResult);
+
+            Message msg = handler.obtainMessage();
+            msg.obj = strResult + "EPC:" + res.getEPC() + "@" + res.getRssi();
+
+            handler.sendMessage(msg);
         }
+    }
+}
     }
 
     public boolean playTone(String type) {
