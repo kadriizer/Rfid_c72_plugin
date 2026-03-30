@@ -345,8 +345,8 @@ public class UHFHelper {
                 toneType = ToneGenerator.TONE_SUP_ERROR;
                 duration = 260;
             } else if ("warn".equalsIgnoreCase(type) || "warning".equalsIgnoreCase(type)) {
-                toneType = ToneGenerator.TONE_PROP_NACK;
-                duration = 200;
+                toneType = ToneGenerator.TONE_PROP_BEEP2;
+                duration = 240;
             }
             toneGen.startTone(toneType, duration);
             return true;
